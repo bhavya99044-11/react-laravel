@@ -7,11 +7,12 @@ import { FaMinus } from "react-icons/fa";
 
 const Faq = () => {
 
-  const[error,setError]=useState('');
+  const[error,setError]=useState([]);
   const [faq, setFaq] = useState([{
     id: Date.now(),
     question: '',
-    answer: ''
+    answer: '',
+    image_path: '',
   }]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleModal = () => {
@@ -19,32 +20,39 @@ const Faq = () => {
   }
   useEffect(() => {
 
-  })
+  },)
   const submitForm = async(e) => {
-    setError('')
-   checkValidation(e);
-   var promise=new Promise((resolve, reject) =>{
-    checkValidation(e);
-    resolve();
-   });
-   promise.then(()=>{
-    console.log('form submitted')
-     if(error =='') toggleModal();
-    // e.target.reset();
-   })
-  //  e.target.reset();
-
+    let valid=checkValidation(e);
+    if(valid){
+      console.log(valid)
+      // toggleModal();
+      console.log(error);
+      // setFaq([{
+      //   id: Date.now(),
+      //   question: '',
+      //   answer: ''
+      // }])
+    }
   }
 
   const checkValidation=(e)=>{
     e.preventDefault();
+    let isValid=true;
     faq.forEach((item) => {
-      if(item.question === '' || item.answer === ''){
-        console.log('222')
-       setError('Please fill all fields');
+      if(item.question ===''){
+       setError([...error,{
+        id:item.id,
+        question:'please fill this answer'
+       }]);
+      }if(item.answer ===''){
+        setError([...error,{
+          id:item.id,
+          answer:'please fill this answer'
+        }]);
+        // setError('Please fill all fields');
       }
     });
-    return true;
+    return isValid;
   }
 
   const changeValue=(key,value,id)=>{
@@ -81,8 +89,12 @@ const Faq = () => {
     faq.forEach((item)=>{
       if(item.id === id){
         item.image =file;
+        var url=URL.createObjectURL(file);
+        item.image_path = url;
       }
     })
+    console.log(faq[0].image)
+
     setFaq([...faq]);
   }
   return (
@@ -101,8 +113,8 @@ const Faq = () => {
 
                       <div className="flex  justify-center w-full ">
                         <input type="file" className="hidden" id={`image_click_${item.id}`} onChange={(e)=>imageUpload(e,item.id)}/>
-                        <FaCloudUploadAlt onClick={()=>imageClick(item.id)} size={50} className="cursor-pointer text-blue-500 hover:border hover:border-blue-700 hover:border-dashed rounded-full hover:text-blue-600" />
-                        
+                        {!item.image_path && <FaCloudUploadAlt onClick={()=>imageClick(item.id)} size={50} className="cursor-pointer text-blue-500 hover:border hover:border-blue-700 hover:border-dashed rounded-full hover:text-blue-600" />}
+                        {item.image_path &&<img  onClick={()=>imageClick(item.id)} className="cursor-pointer text-blue-500 h-[50px] w-[50px] hover:border hover:border-blue-700 hover:border-dashed rounded-full hover:text-blue-600" src={item.image_path}></img>}
                       </div>
                       <div className="h-[50px] flex justify-center items-center h-full">
                       {i?<FaMinus 
