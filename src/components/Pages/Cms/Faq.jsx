@@ -8,22 +8,24 @@ import { FaMinus } from "react-icons/fa";
 import axios from "axios";
 const Faq = () => {
 
-  const scrollHeight = useRef(null);
   const imageRef = useRef(null);
   const [error, setError] = useState([]);
-  const [faq, setFaq] = useState([{
+  const dataJson={
     id: Date.now(),
     question: '',
     answer: '',
-    image:"",
+    image: "",
     image_path: '',
-  }]);
+  }
+  const [faq, setFaq] = useState([dataJson]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
   }
   useEffect(() => {
-  })
+   setFaq([dataJson])
+   setError([])
+  },[isModalOpen])
 
   const submitForm = async (e) => {
     let valid = checkValidation(e);
@@ -34,11 +36,10 @@ const Faq = () => {
           id: Date.now(),
           question: '',
           answer: '',
-          image:"",
+          image: "",
           image_path: '',
         }
       ])
-      //  toggleModal();
     }
   }
 
@@ -95,14 +96,11 @@ const Faq = () => {
     const newFaq = {
       id: Date.now(),
       question: '',
-      image:"",
-      image_path:"",
+      image: "",
+      image_path: "",
       answer: ''
     }
-    const lastElement = scrollHeight.current.lastElementChild;
-    if (lastElement) {
-      lastElement.scrollIntoView({ behavior: "smooth" });
-    }
+   
     setFaq([...faq, newFaq]);
 
   }
@@ -113,11 +111,12 @@ const Faq = () => {
   }
 
   const imageClick = (id) => {
-    document.getElementById(`image_click_${id}`).click();
-    console.log('Image clicked');
+    console.log('fffffffff',id)
+    imageRef.current.click();
   }
 
-  const imageUpload = (e, id) => {
+  const imageUpload =(id)=>(e) => {
+    console.log(id)
     const file = e.target.files[0];
     faq.forEach((item) => {
       if (item.id === id) {
@@ -126,37 +125,34 @@ const Faq = () => {
         item.image_path = url;
       }
     })
-    console.log(faq[0].image)
 
     setFaq([...faq]);
   }
   return (
     <div>
       <button className="bg-blue-400 p-5" onClick={toggleModal}>Add Faqs</button>
-      {isModalOpen && (<div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      {isModalOpen && (<div className="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div className="fixed inset-0 bg-gray-500/75 transition-opacity" aria-hidden="true"></div>
         <Box component='form' onSubmit={submitForm}>
-          <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-              <div class="relative  transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                <div className="h-[300px] overflow-y-scroll " id="scroll-height" ref={scrollHeight}>
+          <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+              <div className="relative  transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                <div className="max-h-[500px] overflow-y-scroll " id="scroll-height" >
                   {faq.map((item, i) => {
                     return (
-                      <div key={item.id} class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <div class="sm:flex sm:items-start w-full ">
+                      <div key={item.id} className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div className="sm:flex sm:items-start w-full ">
 
                           <div className="flex  justify-center w-full ">
-                            <input type="file" className="hidden" id={`image_click_${item.id}`} onChange={(e) => imageUpload(e, item.id)} />
-                            {!item.image_path && <FaCloudUploadAlt onClick={() => imageClick(item.id)} size={50} className="cursor-pointer text-blue-500 hover:border hover:border-blue-700 hover:border-dashed rounded-full hover:text-blue-600" />}
+                            <input type="file" accept="image/*" className="hidden" ref={imageRef} onChange={imageUpload(item.id)} />
+                            {!item.image_path && <FaCloudUploadAlt onClick={() => imageRef.current.click()} size={50} className="cursor-pointer text-blue-500 hover:border hover:border-blue-700 hover:border-dashed rounded-full hover:text-blue-600" />}
                             {item.image_path && <img onClick={() => imageClick(item.id)} className="cursor-pointer text-blue-500 h-[50px] w-[50px] hover:border hover:border-blue-700 hover:border-dashed rounded-full hover:text-blue-600" src={item.image_path}></img>}
                           </div>
                           <div className="h-[50px] flex justify-center items-center h-full">
-                            {faq.length > 1 ? <FaMinus
+                            {faq.length > 1 ? <span className="text-red-500 cursor-pointer"><FaMinus
                               onClick={() => removeFaq(item.id)}
-                            /> : null}
+                            /></span> : null}
                           </div>
-                        </div>
-                        <div className="">
                         </div>
                         <InputLabel
                         >Question</InputLabel>
@@ -182,13 +178,13 @@ const Faq = () => {
                     )
                   })}
                 </div>
-                <div class="bg-gray-50 px-4 py-3 flex justify-between sm:px-6">
+                <div className="bg-gray-50 px-4 py-3 flex justify-between sm:px-6">
                   <div>
-                    <button type="button" onClick={addMore} class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto" >Add more</button>
+                    <button type="button" onClick={addMore} className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto" >Add more</button>
                   </div>
                   <div>
-                    <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto" onClick={toggleModal}>Close</button>
-                    <button type="submit" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto" >Submit</button>
+                    <button type="button" className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto" onClick={toggleModal}>Close</button>
+                    <button type="submit" className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto" >Submit</button>
                   </div>
                 </div>
               </div>
