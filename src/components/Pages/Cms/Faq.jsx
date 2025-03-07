@@ -2,7 +2,7 @@ import { Container, InputLabel, Paper, TextField, Box, FormHelperText } from "@m
 import { document } from "postcss";
 import React from "react";
 import { useRef, useEffect } from "react";
-import { useState } from "react";
+import { useState,useLayoutEffect } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { FaMinus } from "react-icons/fa";
 import axios from "axios";
@@ -25,7 +25,13 @@ const Faq = () => {
   useEffect(() => {
    setFaq([dataJson])
    setError([])
+  
   },[isModalOpen])
+
+  // useEffect(() => {
+  //   imageRef.current = faq.map((_, i) => imageRef.current[i]|| React.createRef() );
+  //   console.log(imageRef);
+  // }, [faq]);
 
   const submitForm = async (e) => {
     let valid = checkValidation(e);
@@ -115,16 +121,18 @@ const Faq = () => {
     imageRef.current.click();
   }
 
-  const imageUpload =(id)=>(e) => {
-    console.log(id)
+  const imageUpload =(e,i,id) => {
+    console.log(i)
     const file = e.target.files[0];
-    faq.forEach((item) => {
-      if (item.id === id) {
-        item.image = file;
-        var url = URL.createObjectURL(file);
-        item.image_path = url;
-      }
-    })
+    var url = URL.createObjectURL(file);
+    faq[i].image=file;
+    faq[i].image_path=url;
+    // faq.forEach((item,i) => {
+    //   if (item.id === id) {
+    //     item.image = file;
+    //     item.image_path = url;
+    //   }
+    // })
 
     setFaq([...faq]);
   }
@@ -144,9 +152,9 @@ const Faq = () => {
                         <div className="sm:flex sm:items-start w-full ">
 
                           <div className="flex  justify-center w-full ">
-                            <input type="file" accept="image/*" className="hidden" ref={imageRef} onChange={imageUpload(item.id)} />
-                            {!item.image_path && <FaCloudUploadAlt onClick={() => imageRef.current.click()} size={50} className="cursor-pointer text-blue-500 hover:border hover:border-blue-700 hover:border-dashed rounded-full hover:text-blue-600" />}
-                            {item.image_path && <img onClick={() => imageClick(item.id)} className="cursor-pointer text-blue-500 h-[50px] w-[50px] hover:border hover:border-blue-700 hover:border-dashed rounded-full hover:text-blue-600" src={item.image_path}></img>}
+                            <input type="file" accept="image/*" className="hidden" ref={imageRef} onChange={(e)=>imageUpload(e,i,item.id)} />
+                            {!item.image_path && <FaCloudUploadAlt onClick={() => imageRef.current.click()} size={50}  className="cursor-pointer text-blue-500 hover:border hover:border-blue-700 hover:border-dashed rounded-full hover:text-blue-600" />}
+                            {item.image_path && <img onClick={() => imageRef.current.click()} className="cursor-pointer text-blue-500 h-[50px] w-[50px] hover:border hover:border-blue-700 hover:border-dashed rounded-full hover:text-blue-600" src={item.image_path}></img>}
                           </div>
                           <div className="h-[50px] flex justify-center items-center h-full">
                             {faq.length > 1 ? <span className="text-red-500 cursor-pointer"><FaMinus
